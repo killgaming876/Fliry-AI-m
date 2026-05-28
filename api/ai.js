@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         },
 
         body: JSON.stringify({
-          model: "deepseek/deepseek-r1-0528:free",
+          model: "openai/gpt-3.5-turbo",
 
           messages,
 
