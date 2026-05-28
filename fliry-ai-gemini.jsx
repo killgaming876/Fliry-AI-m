@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const GEMINI_API_KEY = "AIzaSyBMr5rOnkxMe6kHjFrErebCVyKSoWvXMpg" ;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const G = () => (
   <style>{`
