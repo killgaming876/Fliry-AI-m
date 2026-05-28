@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         },
 
         body: JSON.stringify({
-          model: "deepseek/deepseek-chat-v3-0324:free",
+          model: "deepseek/deepseek-r1-0528:free",
 
           messages,
 
