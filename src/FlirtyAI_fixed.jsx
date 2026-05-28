@@ -192,6 +192,10 @@ export default function FlirtyAI() {
   const [showInput, setShowInput] = useState(true);
 
   const callLLM = useCallback(async (text, selectedLang) => {
+    const languageGuide = selectedLang === 'Hinglish'
+      ? 'The generated_reply must be in natural Roman-script Hinglish.'
+      : 'The generated_reply must be in smooth English.';
+
     const system = `You are Fliry AI — the most charming, witty dating coach alive. Your replies make people blush, smile, and immediately want to reply back.
 
 Your reply style — STRICTLY follow this:
@@ -209,6 +213,7 @@ Your reply style — STRICTLY follow this:
 Language rules:
 - English: smooth, confident, playful urban English
 - Hinglish: natural Roman-script Hindi mixed with English slang — yaar, tera, mera, bas, kya, chal, nahi, lagta, haan, seedha baat — like a real Gen-Z chat, short and charming
+- ${languageGuide}
 
 Return ONLY raw JSON, no markdown:
 {"vibe":"<one word>","confidence_score":<60-99>,"generated_reply":"<short witty reply>","why":"<one line on why this works>"}`;
@@ -217,30 +222,43 @@ Return ONLY raw JSON, no markdown:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-  messages: [
-    {
-      role: "user",
-      content: input
-    }
-  ]
-}),
+        messages: [
+          {
+            role: 'system',
+            content: system,
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+      }),
     });
 
     const data = await res.json().catch(() => ({}));
-    setMessages((prev) => [
-  ...prev,
-  {
-    role: "assistant",
-    content: data.reply,
-  },
-]);
 
     if (!res.ok) {
-      throw new Error(data?.error || 'Failed to generate response.');
+      throw new Error(
+        data?.error ||
+        data?.message ||
+        'Failed to generate response.'
+      );
     }
 
-    const raw = typeof data?.raw === 'string' ? data.raw : JSON.stringify(data);
-    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const modelText =
+      typeof data?.reply === 'string'
+        ? data.reply
+        : typeof data?.raw?.choices?.[0]?.message?.content === 'string'
+          ? data.raw.choices[0].message.content
+          : typeof data?.raw === 'string'
+            ? data.raw
+            : '';
+
+    const cleaned = modelText.replace(/```json|```/g, '').trim();
+
+    if (!cleaned) {
+      throw new Error('Empty AI response.');
+    }
 
     try {
       return JSON.parse(cleaned);
@@ -249,7 +267,9 @@ Return ONLY raw JSON, no markdown:
       if (match) return JSON.parse(match[0]);
       throw new Error('Model returned invalid JSON.');
     }
-  }, []);  const handleAnalyze = async () => {
+  }, []);
+
+  const handleAnalyze = async () => {
     if (!chatText.trim()) return;
     setLoading(true); setErrMsg(''); setResult(null);
     try {
@@ -278,9 +298,14 @@ Return ONLY raw JSON, no markdown:
 
   const reset = () => { setResult(null); setChatText(''); setErrMsg(''); setShowInput(true); };
 
-  const copy = () => {
-    navigator.clipboard.writeText(result?.generated_reply || '');
-    setCopied(true); setTimeout(()=>setCopied(false), 2000);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(result?.generated_reply || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setErrMsg('Copy failed.');
+    }
   };
 
   const bubbles = chatText.trim() ? parseBubbles(chatText) : [];
@@ -498,5 +523,4 @@ Return ONLY raw JSON, no markdown:
         </footer>
       </div>
     </>
-  );
-}
+  ));
