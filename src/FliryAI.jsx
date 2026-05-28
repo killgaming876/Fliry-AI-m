@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const GEMINI_API_KEY = "AIzaSyBua5lmWypBW_jQZnkSyB6LU5ig79vWCpA";
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
 
 async function askGemini(prompt) {
   try {
@@ -16,12 +16,12 @@ async function askGemini(prompt) {
             {
               parts: [
                 {
-                  text: prompt
-                }
-              ]
-            }
-          ]
-        })
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
       }
     );
 
@@ -29,24 +29,17 @@ async function askGemini(prompt) {
 
     console.log(data);
 
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+    return (
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response"
+    );
   } catch (err) {
     console.error(err);
-    return "Error occurred";
+    return "Error: " + err.message;
   }
 }
 
 askGemini("Hello").then(console.log);
-
-    const data = await res.json();
-
-    console.log(data); // mobile won't show, but safe
-
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
-  } catch (err) {
-    return "Error: " + err.message;
-  }
-}
 
 const G = () => (
   <style>{`
