@@ -1,24 +1,23 @@
 import { useState, useCallback } from "react";
 
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
+const OPENROUTER_API_KEY = "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";
 
-async function askGemini(prompt) {
+async function askAI(prompt) {
   try {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contents: [
+          model: "deepseek/deepseek-chat-v3-0324:free",
+          messages: [
             {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
+              role: "user",
+              content: prompt,
             },
           ],
         }),
@@ -30,7 +29,7 @@ async function askGemini(prompt) {
     console.log(data);
 
     return (
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      data?.choices?.[0]?.message?.content ||
       "No response"
     );
   } catch (err) {
@@ -39,7 +38,7 @@ async function askGemini(prompt) {
   }
 }
 
-askGemini("Hello").then(console.log);
+askAI("Hello").then(console.log);;
 
 const G = () => (
   <style>{`
