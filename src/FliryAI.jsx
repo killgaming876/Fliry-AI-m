@@ -2,29 +2,41 @@ import { useState, useCallback } from "react";
 
 const GEMINI_API_KEY = "AIzaSyBMr5rOnkxMe6kHjFrErebCVyKSoWvXMpg";
 
-async function callGemini(text) {
+async function askGemini(prompt) {
   try {
     const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_API_KEY,
         },
         body: JSON.stringify({
           contents: [
             {
               parts: [
                 {
-                  text: text,
-                },
-              ],
-            },
-          ],
-        }),
+                  text: prompt
+                }
+              ]
+            }
+          ]
+        })
       }
     );
+
+    const data = await res.json();
+
+    console.log(data);
+
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+  } catch (err) {
+    console.error(err);
+    return "Error occurred";
+  }
+}
+
+askGemini("Hello").then(console.log);
 
     const data = await res.json();
 
