@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const GEMINI_API_KEY = "AIzaSyBMr5rOnkxMe6kHjFrErebCVyKSoWvXMpg";
+const GEMINI_API_KEY = "AIzaSyBua5lmWypBW_jQZnkSyB6LU5ig79vWCpA";
 
 async function askGemini(prompt) {
   try {
