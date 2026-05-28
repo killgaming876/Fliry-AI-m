@@ -523,4 +523,4 @@ Return ONLY raw JSON, no markdown:
         </footer>
       </div>
     </>
-  ));
+  );
