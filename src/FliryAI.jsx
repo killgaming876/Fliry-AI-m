@@ -1,6 +1,40 @@
 import { useState, useCallback } from "react";
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = "AIzaSyBMr5rOnkxMe6kHjFrErebCVyKSoWvXMpg";
+
+async function callGemini(text) {
+  try {
+    const res = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: text,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    console.log(data); // mobile won't show, but safe
+
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+  } catch (err) {
+    return "Error: " + err.message;
+  }
+}
 
 const G = () => (
   <style>{`
