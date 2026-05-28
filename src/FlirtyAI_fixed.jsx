@@ -217,13 +217,23 @@ Return ONLY raw JSON, no markdown:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text,
-        lang: selectedLang,
-        system,
-      }),
+  messages: [
+    {
+      role: "user",
+      content: input
+    }
+  ]
+}),
     });
 
     const data = await res.json().catch(() => ({}));
+    setMessages((prev) => [
+  ...prev,
+  {
+    role: "assistant",
+    content: data.reply,
+  },
+]);
 
     if (!res.ok) {
       throw new Error(data?.error || 'Failed to generate response.');
