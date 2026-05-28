@@ -525,5 +525,3 @@ Return ONLY raw JSON, no markdown:
     </>
   );
 }
-export default FlirtyAI;
-
